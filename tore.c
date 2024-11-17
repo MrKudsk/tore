@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include "sqlite3.h"
 
+#define NOB_IMPLEMENTATION
+#include "nob.h"
+
+
 int main(void)
 {
   const char *home_path = getenv("HOME");
@@ -10,7 +14,21 @@ int main(void)
     return 1;
   }
 
-    printf("HOME: is %s\n", home_path);
+  const char *tore_path = nob_temp_sprintf("%s/.tore", home_path);
+  printf("Database path: %s\n", tore_path);
 
-    return 0;
+  sqlite3 *db;
+  sqlite3_stmt *stmt;
+
+  sqlite3_open(tore_path, &db);
+  if (db == NULL) {
+    fprintf(stderr, "ERROR: could not open %s\n", tore_path);
+    return 1;
+  }
+
+  printf("Succesfull opened %s\n", tore_path);
+
+  sqlite3_close(db);
+
+  return 0;
 }
